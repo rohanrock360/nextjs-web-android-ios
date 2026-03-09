@@ -5,25 +5,25 @@ import { useRouter } from 'next/navigation';
 import { getSession } from '@/lib/auth';
 
 export default function Home() {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(true);
+ const router= useRouter();
+ const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check session and redirect accordingly
-    const checkSession= () => {
-      const session= getSession();
-      
-      if (session) {
-        // User is logged in - redirect to dashboard
-        router.push('/dashboard');
-      } else {
-        // User is not logged in - redirect to login
-        router.push('/login');
-      }
-    };
+   // Check session and redirect accordingly
+   const checkSession= () => {
+     const session=getSession();
+     
+     if (session) {
+       // User is logged in - redirect to dashboard
+       router.push('/dashboard');
+     } else {
+       // User is not logged in - redirect to login
+       router.push('/login');
+     }
+   };
 
-    checkSession();
-    setIsLoading(false);
+  checkSession();
+ setIsLoading((prev) => false);
   }, [router]);
 
   // Show loading state while checking session

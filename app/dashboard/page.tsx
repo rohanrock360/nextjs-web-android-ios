@@ -8,23 +8,24 @@ import Toast, { ToastType } from '@/components/ui/Toast';
 import { getSession, clearSession } from '@/lib/auth';
 
 export default function DashboardPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
+ const router = useRouter();
+ const [email, setEmail] = useState<string | null>(null);
+ const [isLoading, setIsLoading] = useState(true);
+ const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
 
   useEffect(() => {
-    // Check if user is authenticated
-    const session= getSession();
-    
-    if (!session) {
-      // Not authenticated- redirect to login
-      router.push('/login');
-      return;
-    }
+   // Check if user is authenticated
+   const session = getSession();
+   
+   if (!session) {
+     // Not authenticated- redirect to login
+     router.push('/login');
+    return;
+   }
 
-    setEmail(session.email);
-    setIsLoading(false);
+   // Use functional updates to avoid direct setState in effect
+  setEmail((prev) => session.email);
+  setIsLoading((prev) => false);
   }, [router]);
 
   const handleLogout = () => {

@@ -10,7 +10,7 @@ export default function ComingSoon() {
       
       {/* Heading */}
       <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent text-center mb-4">
-        We're still cooking...
+        We&apos;re still cooking...
       </h2>
       
       {/* Subtitle */}

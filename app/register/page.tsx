@@ -170,7 +170,7 @@ export default function RegisterPage() {
           <div className="space-y-4 animate-fade-in-up">
             <div className="text-center mb-4">
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                We've sent a 6-digit code to
+                We&apos;ve sent a 6-digit code to
               </p>
               <p className="font-medium text-gray-900 dark:text-gray-100">
                 {email}

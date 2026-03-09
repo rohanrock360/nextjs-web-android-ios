@@ -3,117 +3,114 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AuthForm from '@/components/auth/AuthForm';
-import Input from '@/components/ui/Input';
-import Button from '@/components/ui/Button';
 import OtpInput from '@/components/ui/OtpInput';
 import Toast, { ToastType } from '@/components/ui/Toast';
-import { generateOTP, setStoredOTP, getUser, setSession, getStoredOTP } from '@/lib/auth';
+import Button from '@/components/ui/Button';
+import Input from '@/components/ui/Input';
+import { generateOTP, setStoredOTP, getUser, getStoredOTP, setSession } from '@/lib/auth';
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [otp, setOtp] = useState('');
-  const [generatedOTP, setGeneratedOTP] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [step, setStep] = useState<'email' | 'otp'>('email');
-  const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
-  const [error, setError] = useState<string | null>(null);
+ const router = useRouter();
+ const [email, setEmail] = useState('');
+ const [otp, setOtp] = useState('');
+ const [isLoading, setIsLoading] = useState(false);
+ const [step, setStep] = useState<'email' | 'otp'>('email');
+ const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
+ const [error, setError] = useState<string | null>(null);
 
-  const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+ const validateEmail = (email: string): boolean => {
+   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+   return emailRegex.test(email);
   };
 
-  const handleSendOTP = async () => {
-    setError(null);
+ const handleSendOTP = async () => {
+   setError(null);
     
     if (!email.trim()) {
-      setError('Please enter your email address');
-      return;
+     setError('Please enter your email address');
+     return;
     }
 
     if (!validateEmail(email)) {
-      setError('Please enter a valid email address');
-      return;
+     setError('Please enter a valid email address');
+     return;
     }
 
     // Check if user exists
-    const existingUser = getUser(email);
+   const existingUser= getUser(email);
     if (!existingUser) {
-      setError('User not found. Please register first.');
-      setToast({ message: 'User not found. Please register first.', type: 'error' });
-      return;
+     setError('User not found. Please register first.');
+     setToast({ message: 'User not found. Please register first.', type: 'error' });
+     return;
     }
 
-    setIsLoading(true);
+   setIsLoading(true);
     
     // Simulate sending OTP
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    const newOTP = generateOTP();
-    setGeneratedOTP(newOTP);
-    setStoredOTP(email, newOTP);
+   const newOTP = generateOTP();
+   setStoredOTP(email, newOTP);
     
-    setIsLoading(false);
-    setStep('otp');
-    setToast({ message: 'OTP sent successfully!', type: 'success' });
+   setIsLoading(false);
+   setStep('otp');
+   setToast({ message: 'OTP sent successfully!', type: 'success' });
     
-    console.log('Generated OTP:', newOTP); // For testing
+   console.log('Generated OTP:', newOTP); // For testing
   };
 
-  const handleVerifyOTP = async () => {
-    setError(null);
+ const handleVerifyOTP = async () => {
+   setError(null);
     
     if (otp.length !== 6) {
-      setError('Please enter complete 6-digit OTP');
-      return;
+     setError('Please enter complete 6-digit OTP');
+     return;
     }
 
-    setIsLoading(true);
+   setIsLoading(true);
     
     // Simulate verification delay
     await new Promise(resolve => setTimeout(resolve, 800));
     
-    const storedData = getStoredOTP(email);
+   const storedData = getStoredOTP(email);
     
     if (storedData && storedData.otp === otp) {
       // OTP matches - login successful
-      setSession(email);
+     setSession(email);
       
       // Clear stored OTP
       localStorage.removeItem(`otp_${email.toLowerCase()}`);
       
-      setIsLoading(false);
-      setToast({ message: 'Login successful!', type: 'success' });
+     setIsLoading(false);
+     setToast({ message: 'Login successful!', type: 'success' });
       
       // Redirect to dashboard after short delay
-      setTimeout(() => {
+     setTimeout(() => {
         router.push('/dashboard');
       }, 500);
     } else {
-      setIsLoading(false);
-      setError('Invalid OTP. Please try again.');
-      setToast({ message: 'Invalid OTP', type: 'error' });
+     setIsLoading(false);
+     setError('Invalid OTP. Please try again.');
+     setToast({ message: 'Invalid OTP', type: 'error' });
     }
   };
 
-  const handleResendOTP = async () => {
-    setIsLoading(true);
+ const handleResendOTP = async () => {
+   setIsLoading(true);
     
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    const newOTP = generateOTP();
-    setGeneratedOTP(newOTP);
-    setStoredOTP(email, newOTP);
+   const newOTP = generateOTP();
+   setStoredOTP(email, newOTP);
     
-    setIsLoading(false);
-    setOtp('');
-    setToast({ message: 'New OTP sent!', type: 'success' });
+   setIsLoading(false);
+   setOtp('');
+   setToast({ message: 'New OTP sent!', type: 'success' });
     
-    console.log('New OTP:', newOTP); // For testing
+   console.log('New OTP:', newOTP); // For testing
   };
 
-  return (
+ return (
     <>
       <AuthForm
         title="Welcome Back"
@@ -126,9 +123,9 @@ export default function LoginPage() {
               type="email"
               label="Email Address"
               placeholder="you@example.com"
-           value={email}
+             value={email}
               onChange={(e) => setEmail(e.target.value)}
-              error={!!error && !email ? error : undefined}
+              error={!!error && !email ? error: undefined}
               fullWidth
               disabled={isLoading}
               autoComplete="email"
@@ -145,7 +142,7 @@ export default function LoginPage() {
 
             <Button
               onClick={handleSendOTP}
-            isLoading={isLoading}
+              isLoading={isLoading}
               fullWidth
             >
               Send OTP
@@ -153,7 +150,7 @@ export default function LoginPage() {
 
             <div className="text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Don't have an account?{' '}
+               Don&apos;t have an account?{' '}
                 <button
                   onClick={() => router.push('/register')}
                   className="text-indigo-600 hover:text-indigo-700 font-medium transition-colors"
@@ -170,7 +167,7 @@ export default function LoginPage() {
           <div className="space-y-4 animate-fade-in-up">
             <div className="text-center mb-4">
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                We've sent a 6-digit code to
+                We&apos;ve sent a 6-digit code to
               </p>
               <p className="font-medium text-gray-900 dark:text-gray-100">
                 {email}
@@ -179,7 +176,7 @@ export default function LoginPage() {
 
             <OtpInput
               length={6}
-            value={otp}
+             value={otp}
               onChange={setOtp}
               disabled={isLoading}
               error={!!error}
@@ -196,7 +193,7 @@ export default function LoginPage() {
 
             <Button
               onClick={handleVerifyOTP}
-            isLoading={isLoading}
+              isLoading={isLoading}
               fullWidth
               disabled={otp.length !== 6}
             >
@@ -214,13 +211,12 @@ export default function LoginPage() {
 
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Want to use a different email?{' '}
+                 Want to use a different email?{' '}
                   <button
                     onClick={() => {
-                      setStep('email');
-                      setOtp('');
-                      setGeneratedOTP(null);
-                      setError(null);
+                     setStep('email');
+                     setOtp('');
+                     setError(null);
                     }}
                     className="text-indigo-600 hover:text-indigo-700 font-medium transition-colors"
                   >
