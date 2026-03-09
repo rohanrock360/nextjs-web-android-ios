@@ -2,83 +2,100 @@ name: Build Web, Android & iOS
 
 on:
   push:
-    branches: [main]
+  branches: [main]
   workflow_dispatch:
 
 jobs:
-  build-web:
-    runs-on: ubuntu-latest
-    steps:
+ build-web:
+  runs-on: ubuntu-latest
+  steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
+      with:
+         node-version: '22'
           cache: 'npm'
       - run: npm install
       - run: npm run build
       - uses: actions/upload-artifact@v4
-        with:
-          name: web-build
+      with:
+        name: web-build
           path: out/
 
-  build-android:
-    runs-on: ubuntu-latest
-    steps:
+build-android:
+  runs-on: ubuntu-latest
+  steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
+      with:
+         node-version: '22'
           cache: 'npm'
       - uses: actions/setup-java@v4
-        with:
+      with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      uses: android-actions/setup-android@v3
       - run: npm install
       - run: npm run build
-      - run: npx cap add android || true
+      - run: npx cap add android --force
       - run: npx cap sync android
       - name: Build APK
-        run: |
-          cd android
+      run: |
+        cd android
           chmod +x gradlew
           ./gradlew assembleDebug
       - uses: actions/upload-artifact@v4
-        with:
-          name: android-apk
+      with:
+        name: android-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
 
-  build-ios:
-    runs-on: macos-latest
-    steps:
+build-ios:
+  runs-on: macos-latest
+  steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
+      with:
+         node-version: '22'
           cache: 'npm'
       - run: npm install
       - run: npm run build
-      - run: npx cap add ios || true
+      - run: npx cap add ios --force
       - run: npx cap sync ios
+      - name: Verify Podfile exists
+      run: |
+        cd ios/App
+         if [ ! -f Podfile ]; then
+          echo "Podfile not found, creating..."
+           cat > Podfile << 'EOF'
+platform :ios, '14.0'
+use_frameworks!
+
+target'App' do
+ pod 'CapacitorCordova', :path => '../../node_modules/@capacitor/ios'
+end
+EOF
+        else
+          echo "Podfile found!"
+           cat Podfile
+         fi
       - name: Install CocoaPods
-        run: |
-          cd ios/App
+      run: |
+        cd ios/App
           pod install
       - name: Build iOS
-        run: |
+      run: |
           xcodebuild \
             -workspace ios/App/App.xcworkspace \
             -scheme App \
-            -configuration Debug \
-            -sdk iphonesimulator \
+            -configuration Debug\
+            -sdk iphonesimulator\
             -derivedDataPath ios/build \
             CODE_SIGNING_ALLOWED=NO
       - name: Package iOS build
-        run: |
-          cd ios/build/Build/Products/Debug-iphonesimulator
-          zip -r ios-app.zip App.app
+      run: |
+        cd ios/build/Build/Products/Debug-iphonesimulator
+        zip -r ios-app.zip App.app
       - uses: actions/upload-artifact@v4
-        with:
-          name: ios-build
+      with:
+        name: ios-build
           path: ios/build/Build/Products/Debug-iphonesimulator/ios-app.zip
