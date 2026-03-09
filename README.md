@@ -1,36 +1,242 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# QuickBite - Next.js + Capacitor OTP Authentication App
 
-## Getting Started
+A modern, clean Next.js + Capacitor application with fixed OTP authentication (code: **123456**).
 
-First, run the development server:
+## 🚀 Quick Start
+
+### Test the App Locally
 
 ```bash
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**OTP Code: `123456`** (works for both login and register!)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 📱 Build & Deploy to GitHub Actions (Get APK + IPA)
 
-To learn more about Next.js, take a look at the following resources:
+### Step 1 — Push to GitHub
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+git init
+git add .
+git commit -m "initial commit"
+git branch -M main
+git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
+git push -u origin main
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Step 2 — GitHub Actions Automatically Builds
 
-## Deploy on Vercel
+After pushing, GitHub Actions will automatically:
+- ✅ Build web version (`/out`)
+- ✅ Build Android APK (`android-apk` artifact)
+- ✅ Build iOS app (`ios-build` artifact)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Step 3 — Download Your Apps
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Go to your GitHub repo
+2. Click **Actions** tab
+3. Click the latest workflow run ("Build Web, Android & iOS")
+4. Scroll to bottom → **Artifacts** section
+5. Download:
+   - `android-apk` → Extract → Install `.apk` on Android phone
+   - `ios-build` → Extract → Upload `App.app` zip to [Appetize.io](https://appetize.io) to preview in browser
+
+---
+
+## 🔧 Configuration Files
+
+### next.config.ts ✅
+```typescript
+const nextConfig = {
+  output: "export",
+ images: { unoptimized: true },
+  trailingSlash: true,
+};
+```
+
+### capacitor.config.ts ✅
+```typescript
+const config = {
+  appId: 'com.example.app',
+  appName: 'my-app',
+  webDir: 'out'
+};
+```
+
+### package.json Scripts ✅
+```json
+{
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "build:mobile": "next build && npx cap sync",
+    "build:android": "next build && npx cap sync && npx cap open android",
+    "build:ios": "next build && npx cap sync && npx cap open ios",
+    "sync": "npx cap sync"
+  }
+}
+```
+
+---
+
+## 🧪 Testing Instructions
+
+### Test Registration Flow
+
+1. Go to http://localhost:3000
+2. Click **"Register here"**
+3. Enter email: `test@example.com`
+4. Click **"Send OTP"**
+5. Enter OTP: **`123456`**
+6. Click **"Verify & Register"**
+7. ✅ Redirects to Dashboard with welcome message!
+
+### Test Login Flow
+
+1. Go to http://localhost:3000
+2. Click **"Login here"** (or `/login`)
+3. Enter same email: `test@example.com`
+4. Click **"Send OTP"**
+5. Enter OTP: **`123456`**
+6. Click **"Verify & Login"**
+7. ✅ Redirects to Dashboard!
+
+### Test Non-Existent User
+
+1. Go to `/login`
+2. Enter unknown email: `unknown@example.com`
+3. Click **"Send OTP"**
+4. ❌ Shows error: "User not found. Please register first."
+
+### Test Logout
+
+1. From dashboard, click **"Logout"** button
+2. ✅ Clears session and redirects to login page
+
+### Session Persistence
+
+1. Login successfully
+2. Refresh the page (F5)
+3. ✅ Stays on dashboard (session persists!)
+
+---
+
+## 📦 Project Structure
+
+```
+my-app/
+├── app/                      # Next.js App Router pages
+│   ├── page.tsx             # Root redirect (session-based)
+│   ├── login/page.tsx       # Login page
+│   ├── register/page.tsx    # Registration page
+│   └── dashboard/page.tsx   # Protected dashboard
+├── components/
+│   ├── ui/                  # Reusable UI components
+│   │   ├── Toast.tsx
+│   │   ├── OtpInput.tsx
+│   │   ├── Button.tsx
+│   │   └── Input.tsx
+│   └── auth/                # Auth-specific components
+│       ├── AuthForm.tsx
+│       └── ComingSoon.tsx
+├── hooks/
+│   └── useAuth.ts           # Custom auth hook
+├── lib/
+│   └── auth.ts              # Auth utilities (localStorage)
+├── .github/workflows/
+│   └── build.yml            # CI/CD pipeline
+├── .gitignore               # Git ignore rules
+├── next.config.ts           # Next.js config
+├── capacitor.config.ts      # Capacitor config
+└── package.json             # Dependencies
+```
+
+---
+
+## 🎨 Features
+
+- ✅ Fixed OTP authentication (code: `123456`)
+- ✅ Email-based registration and login
+- ✅ localStorage for user management
+- ✅ Session persistence
+- ✅ Protected routes
+- ✅ Beautiful glassmorphism UI
+- ✅ Fully responsive (mobile-first)
+- ✅ Smooth animations and transitions
+- ✅ Toast notifications
+- ✅ Loading states
+- ✅ Error handling
+- ✅ Static export ready
+- ✅ GitHub Actions CI/CD
+- ✅ Android & iOS builds automated
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework:** Next.js 16.1.6 (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS v4
+- **Mobile:** Capacitor 8.x (Android & iOS)
+- **State:** React Hooks + localStorage
+- **CI/CD:** GitHub Actions
+
+---
+
+## 📤 Deployment Options
+
+### Option 1: GitHub Actions (Recommended)
+
+Automatically builds web, Android APK, and iOS IPA artifacts.
+
+### Option 2: Vercel (Web Only)
+
+The app is configured for static export and works perfectly on Vercel.
+
+### Option 3: Manual Capacitor Build
+
+```bash
+# Build web
+npm run build
+
+# Sync Capacitor
+npm run sync
+
+# Open in Android Studio
+npm run build:android
+
+# Open in Xcode
+npm run build:ios
+```
+
+---
+
+## 🔐 Security Notes
+
+- OTP code is fixed (`123456`) for testing purposes only
+- In production, implement proper backend with real OTP generation
+- Never use fixed OTP in production apps
+- This is a prototype/demo application
+
+---
+
+## 📝 License
+
+MIT
+
+---
+
+## 🙏 Credits
+
+Built with ❤️ using Next.js, Capacitor, and Tailwind CSS.
