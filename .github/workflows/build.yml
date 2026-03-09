@@ -59,30 +59,12 @@ jobs:
       - name: Generate iOS project
         run: |
           rm -rf ios
-          npx cap add ios 2>&1
-          echo "--- cap add done, exit code: $?"
-          npx cap sync ios 2>&1
-          echo "--- cap sync done"
-      - name: Debug filesystem
-        run: |
-          echo "=== repo root ==="
-          ls -la
-          echo "=== ios/ ==="
-          ls -la ios/ || echo "ios/ does not exist"
-          echo "=== ios/App/ ==="
-          ls -la ios/App/ || echo "ios/App/ does not exist"
-          echo "=== find Podfile ==="
-          find . -name "Podfile" 2>/dev/null || echo "No Podfile found anywhere"
-          echo "=== capacitor.config ==="
-          cat capacitor.config.ts || cat capacitor.config.json || echo "no capacitor config found"
-      - name: Install CocoaPods
-        run: |
-          cd ios/App
-          pod install
-      - name: Build iOS
+          npx cap add ios
+          npx cap sync ios
+      - name: Build iOS (SPM - no CocoaPods needed)
         run: |
           xcodebuild \
-            -workspace ios/App/App.xcworkspace \
+            -project ios/App/App.xcodeproj \
             -scheme App \
             -configuration Debug \
             -sdk iphonesimulator \
