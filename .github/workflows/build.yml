@@ -121,7 +121,7 @@ jobs:
       
       - name: Package iOS build
        run: |
-          cp -r ios/build/Build/Products/Debug-iphonesimulator/App.app ios/artifacts/
+         cp -r ios/build/Build/Products/Debug-iphonesimulator/App.app ios/artifacts/
          cd ios/artifacts
          zip -r ios-build.zip App.app
       
